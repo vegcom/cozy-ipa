@@ -1,0 +1,1 @@
+--admin-password=${IPA_ADMIN_PASSWORD} --auto-reverse --debug --domain=${IPA_DOMAIN} --ds-password=${IPA_DS_PASSWORD} --forwarder=${IPA_FORWARDER} --hostname=${IPA_SERVER_HOST} --no-ntp --realm=${IPA_REALM} --setup-dns --skip-mem-check --unattended

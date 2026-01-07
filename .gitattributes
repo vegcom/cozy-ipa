@@ -1,0 +1,48 @@
+# Auto detect line endings and normalize to LF
+* text=auto
+
+# Shell scripts - always LF
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+
+# Salt/Python configs - always LF
+*.sls text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.conf text eol=lf
+*.cfg text eol=lf
+
+# Dotfiles - always LF
+.bashrc text eol=lf
+.zshrc text eol=lf
+.vimrc text eol=lf
+.profile text eol=lf
+.env text eol=lf
+
+# Documentation - always LF
+*.md text eol=lf
+*.txt text eol=lf
+
+# Windows-specific files - preserve CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.tar binary
+*.gz binary
+
+# Git files
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# Orchistration
+*.terraform text eol=lf
+Dockerfile* text eol=lf

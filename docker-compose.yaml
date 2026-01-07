@@ -1,0 +1,75 @@
+services:
+  # https://docs.docker.com/reference/compose-file/services/
+
+  freeipa-config:
+    build:
+      context: freeipa
+      dockerfile: config.Dockerfile
+    environment:
+      IPA_ADMIN_PASSWORD: "${IPA_ADMIN_PASSWORD}"
+      IPA_DOMAIN: "${IPA_DOMAIN}"
+      IPA_DS_PASSWORD: "${IPA_DS_PASSWORD}"
+      IPA_REALM: "${IPA_REALM}"
+      IPA_SERVER_HOST: "${IPA_SERVER_HOST}"
+      IPA_SERVER_IP: "${IPA_SERVER_IP}"
+      IPA_FORWARDER: "${IPA_FORWARDER}"
+    restart: no
+    volumes:
+      - ./freeipa/ipa-server-install-options.template:/ipa-server-install-options.template:ro
+      - ./freeipa/ipa-server-install-options:/ipa-server-install-options:rw
+
+  freeipa:
+    # https://www.freeipa.org/page/Documentation.html
+    image: freeipa/freeipa-server:fedora-rawhide
+    hostname: "${IPA_SERVER_HOST}"
+    dns:
+      - 10.0.0.1
+    dns_search:
+      - guava.local
+      - local
+    extra_hosts:
+      - "${IPA_SERVER_HOST}:${IPA_SERVER_IP}"
+    mac_address: "00:00:00:00:00:01"
+    networks:
+      frontend:
+        ipv4_address: ${IPA_SERVER_IP}
+    environment:
+      DEBUG_NO_EXIT: "1"
+      DEBUG_TRACE: "1"
+      FORCE_CREATE_CA: "1"
+      TZ: "${TZ}"
+    ports:
+      - "${IPA_SERVER_IP}:443:443"
+      - "${IPA_SERVER_IP}:80:80"
+      - "${IPA_SERVER_IP}:389:389"
+      - "${IPA_SERVER_IP}:464:464"
+      - "${IPA_SERVER_IP}:636:636"
+      - "${IPA_SERVER_IP}:88:88"
+    volumes:
+      - ./freeipa/ipa-server-install-options:/data/ipa-server-install-options:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /var/log/ipaserver-install.log:/var/log/ipaserver-install.log:rw
+      - freeipa_data:/data:rw
+    tmpfs:
+      - /run
+      - /run/lock
+      - /tmp
+      - /var/lib/dirsrv
+    restart: unless-stopped
+    privileged: true
+    depends_on:
+      - freeipa-config
+    healthcheck:
+      test: CMD ["ipa-healthcheck", "--debug"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 2m
+
+volumes:
+  freeipa_data:
+
+networks:
+  frontend:
+    external: true
